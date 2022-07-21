@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.finalprm.fuze.Chat.ChatActivity"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbarLayout"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
+        <include
+            android:id="@+id/chatToolbar"
+            layout="@layout/toolbar_chat" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/messagesLayout"
+        android:layout_above="@+id/sendLayout"
+        android:layout_below="@+id/toolbarLayout"
+        android:orientation="horizontal"
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical"
+            />
+
+    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:id="@+id/sendLayout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        android:padding="15dp">-->
+
+
+<!--        &lt;!&ndash;<com.google.android.material.textfield.TextInputLayout&ndash;&gt;-->
+<!--            &lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+<!--            &lt;!&ndash;android:layout_weight="0.8"&ndash;&gt;-->
+<!--            &lt;!&ndash;android:background="@color/white">&ndash;&gt;-->
+
+<!--            &lt;!&ndash;<EditText&ndash;&gt;-->
+<!--                &lt;!&ndash;android:id="@+id/message"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:layout_alignStart="@+id/sendLayout"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:layout_alignTop="@+id/sendLayout"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:background="@drawable/edit_text_focused_bg"&ndash;&gt;-->
+<!--                &lt;!&ndash;android:hint="Type..."&ndash;&gt;-->
+<!--                &lt;!&ndash;android:padding="10dp" />&ndash;&gt;-->
+<!--        &lt;!&ndash;</com.google.android.material.textfield.TextInputLayout>&ndash;&gt;-->
+
+
+
+<!--        <EditText-->
+<!--            android:layout_weight="0.8"-->
+<!--            android:id="@+id/message"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignStart="@+id/sendLayout"-->
+<!--            android:layout_alignTop="@+id/sendLayout"-->
+<!--            android:layout_margin="1.5dp"-->
+<!--            android:hint="Type..."-->
+<!--            />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/send"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignEnd="@+id/sendLayout"-->
+<!--            android:layout_marginLeft="1dp"-->
+<!--            android:layout_weight="0.2"-->
+<!--            android:src="@drawable/ic_send"-->
+<!--            android:adjustViewBounds="false"-->
+<!--            android:text="Send" />-->
+<!--    </LinearLayout>-->
+
+    <LinearLayout
+        android:id="@+id/sendLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="50dp"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom"
+            android:paddingBottom="15dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="20dp"
+            android:background="@drawable/input">
+
+            <ImageView
+                android:id="@+id/emojiButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="bottom"
+                android:src="@drawable/input_emoji"/>
+
+            <EditText
+                android:id="@+id/message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="12dp"
+                android:hint="@string/type_your_message"
+                android:singleLine="false"
+                android:inputType="textMultiLine"
+                android:textSize="18sp"
+                android:textColorHint="#c4c0bd"
+                android:background="@null"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/send"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:background="@drawable/input_circle_normal"
+            android:src="@drawable/input_send"/>
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

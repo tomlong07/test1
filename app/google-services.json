@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1004289444962",
+    "firebase_url": "https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "fuze-c6271",
+    "storage_bucket": "fuze-c6271.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1004289444962:android:a47d025825d749d6b4d53b",
+        "android_client_info": {
+          "package_name": "com.finalprm.fuze"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1004289444962-r3q4ljasefl9pvcrr476565ato2jbs9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDG9w70ES4YUln855qFoXAkVug2iO_biyU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1004289444962-r3q4ljasefl9pvcrr476565ato2jbs9h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
