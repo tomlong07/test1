@@ -46,11 +46,18 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
 //    implementation "com.github.dimorinny:show-case-card-view:0.0.1"
 //
 //
 //    implementation 'com.github.BakerJQ:Android-InfiniteCards:1.0.5'
+    //Circle ImageView
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+
+    //sliding dot splash
+//    implementation 'com.chabbal:slidingdotsplash:1.0.2'
+
+    //add cardview
+    implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation 'com.airbnb.android:lottie:3.4.0'
 

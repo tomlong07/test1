@@ -3,18 +3,22 @@ package com.finalprm.fuze.Main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.finalprm.fuze.Card.Card;
 import com.finalprm.fuze.Card.CardAdapter;
 import com.finalprm.fuze.Matches.MatchesActivity;
 import com.finalprm.fuze.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -23,8 +27,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,9 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar spinner;
     private String currentUserId, notification, sendMessageText;
     private DatabaseReference databaseReference;
+    private FirebaseDatabase database;
     private List<Card> rowItems;
     private TextView tv;
     private SwipeFlingAdapterView flingContainer;
+    private FrameLayout cardFrame, moreFrame;
+    private SlideLayout slideLayout;
 
     //Process
     private void bindingView() {
@@ -52,15 +61,17 @@ public class MainActivity extends AppCompatActivity {
         likebtn = findViewById(R.id.likebtn);
         dislikebtn = findViewById(R.id.dislikebtn);
         tv = (TextView)findViewById(R.id.noCardsBanner);
-        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
-
+//        flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
+        cardFrame = findViewById(R.id.card_frame);
+        moreFrame = findViewById(R.id.more_frame);
+        slideLayout = findViewById(R.id.pulsator);
     }
 
     private void bindingAction() {
         profile.setOnClickListener(this::onProfileClick);
         match.setOnClickListener(this::onMatchClick);
-        likebtn.setOnClickListener(this::onLikeBtnClick);
-        dislikebtn.setOnClickListener(this::onDislikeBtnClick);
+//        likebtn.setOnClickListener(this::onLikeBtnClick);
+//        dislikebtn.setOnClickListener(this::onDislikeBtnClick);
     }
 
     private void onMatchClick(View view) {
@@ -75,13 +86,13 @@ public class MainActivity extends AppCompatActivity {
         this.startActivity(intent);
     }
 
-    private void onDislikeBtnClick(View view) {
-        Toast.makeText(this,"Dislike click",Toast.LENGTH_SHORT).show();
-    }
-
-    private void onLikeBtnClick(View view) {
-        Toast.makeText(this,"Like click",Toast.LENGTH_SHORT).show();
-    }
+//    private void onDislikeBtnClick(View view) {
+//        Toast.makeText(this,"Dislike click",Toast.LENGTH_SHORT).show();
+//    }
+//
+//    private void onLikeBtnClick(View view) {
+//        Toast.makeText(this,"Like click",Toast.LENGTH_SHORT).show();
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +101,10 @@ public class MainActivity extends AppCompatActivity {
         bindingView();
         bindingAction();
         spinner.setVisibility(View.GONE);
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("users");
 
+        slideLayout.start();
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app");
+        databaseReference = database.getReference().child("Users");
         mAuth = FirebaseAuth.getInstance();
         if(mAuth != null && mAuth.getCurrentUser() != null)
             currentUserId = mAuth.getCurrentUser().getUid();
@@ -100,39 +113,26 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-//        checkGender();
+        checkUserSex();
+        rowItems = new ArrayList<>();
+        getUserInfomation();
+        cardAdapter = new CardAdapter(this, R.layout.item, rowItems );
+        checkRowItem();
 
-//        rowItems = new ArrayList<>();
+        final SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
-//        cardAdapter = new CardAdapter(this, R.layout.item, rowItems );
-
+        flingContainer.setAdapter(cardAdapter);
 
         //Display a banner when no cards are available to display
+//        TextView tv = (TextView)findViewById(R.id.noCardsBanner);
 //        if(rowItems.size() == 0) {
 //            tv.setVisibility(View.VISIBLE);
 //        } else {
 //            tv.setVisibility(View.INVISIBLE);
 //        }
 
-//        initRecyclerView();
-//
-//        FirebaseMessaging.getInstance().subscribeToTopic("general")
-//                .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<Void> task) {
-//                        String msg = "Successful";
-//                        if (!task.isSuccessful()) {
-//                            msg = "Failed";
-//                        }
-//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+        Toast.makeText(getApplicationContext(),  rowItems.size() + " ", Toast.LENGTH_LONG).show();
 
-
-
-    }
-
-    private void initRecyclerView() {
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
@@ -145,8 +145,10 @@ public class MainActivity extends AppCompatActivity {
 
                 Card obj = (Card) dataObject;
                 String userId = obj.getUserId();
-                databaseReference.child(userId).child("connections").child("no").child(currentUserId).setValue(true);
+                databaseReference.child(userId).child("connections").child("nope").child(currentUserId).setValue(true);
                 Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+
+                //Display a banner when no cards are available to display
                 TextView tv = (TextView)findViewById(R.id.noCardsBanner);
                 if(rowItems.size() == 0) {
                     tv.setVisibility(View.VISIBLE);
@@ -159,9 +161,11 @@ public class MainActivity extends AppCompatActivity {
             public void onRightCardExit(Object dataObject) {
                 Card obj = (Card) dataObject;
                 String userId = obj.getUserId();
-                databaseReference.child(userId).child("connections").child("yes").child(currentUserId).setValue(true);
+                databaseReference.child(userId).child("connections").child("yeps").child(currentUserId).setValue(true);
                 isConnectionMatch(userId);
                 Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+
+                //Display a banner when no cards are available to display
                 TextView tv = (TextView)findViewById(R.id.noCardsBanner);
                 if(rowItems.size() == 0) {
                     tv.setVisibility(View.VISIBLE);
@@ -182,6 +186,81 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        FirebaseMessaging.getInstance().subscribeToTopic("general")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = "Successful";
+                        if (!task.isSuccessful()) {
+                            msg = "Failed";
+                        }
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        Toast.makeText(getApplicationContext(),  rowItems.size() + " check again", Toast.LENGTH_LONG).show();
+    }
+
+    private void getUserInfomation() {
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                String id, name, bio, userAge, userGender, userFavorite, profileImageUrl;
+                if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    id = dataSnapshot.getKey().toString();
+                    if (map.get("name") != null) {
+                        name = map.get("name").toString();
+                    } else
+                        name = "";
+                    if (map.get("bio") != null) {
+                        bio = map.get("bio").toString();
+                    } else
+                        bio = "";
+                    if (map.get("age") != null) {
+                        userAge = map.get("age").toString();
+                    } else
+                        userAge = "";
+                    if (map.get("gender") != null) {
+                        userGender = map.get("gender").toString();
+                    } else
+                        userGender = "";
+                    if (map.get("favorite") != null) {
+                        userFavorite = map.get("favorite").toString();
+                    } else
+                        userFavorite = "";
+                    if (map.get("profileImageUrl") != null) {
+                        profileImageUrl = map.get("profileImageUrl").toString();
+                    } else
+                        profileImageUrl = "";
+                    Card card = new Card(id, name, userAge, bio, profileImageUrl, userGender, userFavorite);
+//                    if(!card.getUserId().equals(currentUserId))
+                    rowItems.add(card);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
     }
 
     private void isConnectionMatch(final String userId) {
@@ -242,9 +321,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String userGender, userFavorite;
-    private String oppositeUserGender, oppositeUserFavorite;
-    public void checkGender(){
+    private String userGender;
+    private String oppositeUserGender;
+    public void checkUserSex(){
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference userDb = databaseReference.child(user.getUid());
@@ -255,10 +334,8 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     if (dataSnapshot.child("gender").getValue() != null){
                         userGender = dataSnapshot.child("gender").getValue().toString();
-                        userFavorite = dataSnapshot.child("favorite").getValue().toString();
                         oppositeUserGender = userGender;
-                        oppositeUserFavorite = userFavorite;
-                        getOppositeSexUsers(oppositeUserGender, oppositeUserFavorite);
+                        getOppositeSexUsers(oppositeUserGender);
                     }
                 }
             }
@@ -269,66 +346,30 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getOppositeSexUsers(final String oppositeUserGender, final String oppositeUserFavorite){
+    public void getOppositeSexUsers(final String oppositeUserGender){
 
         databaseReference.addChildEventListener(new ChildEventListener() {
 
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if (dataSnapshot.exists() && !dataSnapshot.getKey().equals(currentUserId)) {
-                    if (dataSnapshot.child("gender").exists() && dataSnapshot.child("favorite").exists() && !dataSnapshot.child("connections").child("no").hasChild(currentUserId) && !dataSnapshot.child("connections").child("yes").hasChild(currentUserId) && dataSnapshot.child("gender").getValue().toString().equals(oppositeUserGender) && dataSnapshot.child("favorite").getValue().toString().equals(oppositeUserFavorite)) {
+                    if (dataSnapshot.child("gender").exists() && !dataSnapshot.child("connections").child("nope").hasChild(currentUserId) && !dataSnapshot.child("connections").child("yeps").hasChild(currentUserId) && !dataSnapshot.child("gender").getValue().toString().equals(oppositeUserGender)) {
                         String profileImageUrl = "default";
                         if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
                             profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-                        }
-                        Card item = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl, dataSnapshot.child("gender").getValue().toString(), dataSnapshot.child("favorite").getValue().toString()
-                        );
-                        rowItems.add(item);
-                        cardAdapter.notifyDataSetChanged();
-                    }
-                    else if( dataSnapshot.child("gender").exists() && !dataSnapshot.child("connections").child("no").hasChild(currentUserId) && !dataSnapshot.child("connections").child("yes").hasChild(currentUserId) && dataSnapshot.child("favorite").getValue().toString().equals(oppositeUserFavorite)){
-                        String profileImageUrl = "default";
-//                        if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
-//                            profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
-//                        }
-
-//                        String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue();
-//
-//                        if (profileImageUrl != null && !profileImageUrl.equals("default")){
-//                            profileImageUrl = profileImageUrl.toString();
-//                        }
-
-                        if (dataSnapshot.child("profileImageUrl") != null &&
-                                !"default".equals(dataSnapshot.child("profileImageUrl").getValue())) {
-                        }
-                        Card item = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl, dataSnapshot.child("gender").getValue().toString(), dataSnapshot.child("favorite").getValue().toString()
-                        );
-                        rowItems.add(item);
-                        cardAdapter.notifyDataSetChanged();
-                    }
-                    else if( dataSnapshot.child("gender").exists() && !dataSnapshot.child("connections").child("no").hasChild(currentUserId) && !dataSnapshot.child("connections").child("yeps").hasChild(currentUserId) && dataSnapshot.child("gender").getValue().toString().equals(oppositeUserGender)){
-                        String profileImageUrl = "default";
-                        if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
+                        }else if (!dataSnapshot.child("profileImageUrl").getValue().equals("default")) {
                             profileImageUrl = dataSnapshot.child("profileImageUrl").getValue().toString();
                         }
-                        Card item = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profileImageUrl, dataSnapshot.child("gender").getValue().toString(), dataSnapshot.child("favorite").getValue().toString()
-                        );
+                        Card item = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), dataSnapshot.child("age").getValue().toString(), dataSnapshot.child("bio").getValue().toString(),  profileImageUrl, dataSnapshot.child("gender").getValue().toString(), dataSnapshot.child("favorite").getValue().toString());
                         rowItems.add(item);
                         cardAdapter.notifyDataSetChanged();
                     }
                 }
-                spinner.setVisibility(View.GONE);
-
-
-                //Display a banner when no cards are available to display
-                TextView tv = (TextView)findViewById(R.id.noCardsBanner);
                 if(rowItems.size() == 0) {
                     tv.setVisibility(View.VISIBLE);
                 } else {
                     tv.setVisibility(View.INVISIBLE);
                 }
-
-
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
@@ -345,6 +386,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void checkRowItem() {
+        if (rowItems.isEmpty()) {
+            moreFrame.setVisibility(View.VISIBLE);
+            cardFrame.setVisibility(View.GONE);
+        }
     }
 
 }

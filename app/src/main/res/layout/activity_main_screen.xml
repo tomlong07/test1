@@ -107,6 +107,44 @@
 
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/more_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="70dp"
+            android:visibility="gone">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <com.finalprm.fuze.Main.SlideLayout
+                    android:id="@+id/pulsator"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:pulse_color="@color/colorAccent"
+                    app:pulse_count="3"
+                    app:pulse_duration="8000"
+                    app:pulse_interpolator="Decelerate"
+                    app:pulse_repeat="0"
+                    app:pulse_startFromScratch="false">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/post"
+                        android:layout_width="160dp"
+                        android:layout_height="160dp"
+                        android:layout_centerInParent="true"
+                        android:src="@drawable/profile_image"
+                        app:civ_border_color="@color/red"
+                        app:civ_border_width="1dp" />
+
+                </com.finalprm.fuze.Main.SlideLayout>
+
+            </RelativeLayout>
+        </FrameLayout>
+
     </RelativeLayout>
     <ProgressBar
         android:id="@+id/pBar"

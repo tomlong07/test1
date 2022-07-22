@@ -20,7 +20,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -51,18 +53,19 @@ import java.util.Map;
 
 public class SettingScreen extends AppCompatActivity {
 
-    private EditText edtName, edtPhone;
+    private EditText edtName, edtPhone, edtBio;
     private ProgressBar spinner;
     private Button enter;
     private ImageButton back;
     private ImageView profileImage;
     private Toolbar toolbar;
-
+    private SeekBar age;
     private Spinner gender, favorite;
     private FirebaseAuth mAuth;
     private DatabaseReference databaseReference;
+    private TextView textAge;
 
-    private String userId, name, phone, profileImageUrl, userGender, userFavorite;
+    private String userId, name, phone, profileImageUrl, userAge, bio, userGender, userFavorite;
     private int genderIndex, favoriteIndex;
     private Uri resultUri;
 
@@ -72,12 +75,15 @@ public class SettingScreen extends AppCompatActivity {
         spinner = (ProgressBar)findViewById(R.id.pBar);
         edtName = findViewById(R.id.name);
         edtPhone = findViewById(R.id.phone);
+        edtBio = findViewById(R.id.edtBio);
+        textAge = findViewById(R.id.age);
+        age = (SeekBar) findViewById(R.id.age_range);
+        gender = (Spinner) findViewById(R.id.gender_spinner);
+        favorite = (Spinner) findViewById(R.id.favorite_spinner);
         enter = findViewById(R.id.confirm);
         back = findViewById(R.id.settingsBack);
         profileImage = findViewById(R.id.profileImage);
         toolbar = findViewById(R.id.settingsToolbar);
-        gender = (Spinner) findViewById(R.id.gender_spinner);
-        favorite = (Spinner) findViewById(R.id.favorite_spinner);
         //gender
         ArrayAdapter<CharSequence> genderAdapter = ArrayAdapter.createFromResource(this,
                 R.array.gender, android.R.layout.simple_spinner_item);
@@ -89,6 +95,7 @@ public class SettingScreen extends AppCompatActivity {
         favoriteAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         favorite.setAdapter(favoriteAdapter);
         spinner.setVisibility(View.GONE);
+
 
     }
 
@@ -135,7 +142,22 @@ public class SettingScreen extends AppCompatActivity {
         bindingAction();
         spinner.setVisibility(View.GONE);
         setSupportActionBar(toolbar);
+        age.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                textAge.setText(progress + " years-old");
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         mAuth = FirebaseAuth.getInstance();
         if(mAuth != null && mAuth.getCurrentUser()!= null) {
             userId = mAuth.getCurrentUser().getUid();
@@ -143,7 +165,7 @@ public class SettingScreen extends AppCompatActivity {
         else {
             finish();
         }
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
+        databaseReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app").getReference().child("Users").child(userId);
         getUserInfomation();
 
     }
@@ -212,7 +234,6 @@ public class SettingScreen extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0){
                     Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    edtPhone.setText(userId);
                     if(map.get("name")!=null){
                         name = map.get("name").toString();
                         edtName.setText(name);
@@ -220,6 +241,16 @@ public class SettingScreen extends AppCompatActivity {
                     if(map.get("phone")!=null){
                         phone = map.get("phone").toString();
                         edtPhone.setText(phone);
+                    }
+                    if(map.get("bio")!=null){
+                        bio = map.get("bio").toString();
+                        edtBio.setText(bio);
+                    }
+                    else
+                        userFavorite = "";
+                    if(map.get("age")!=null){
+                        userAge = map.get("age").toString();
+                        age.setProgress(Integer.parseInt(userAge));
                     }
                     if(map.get("gender") != null){
                         userGender = map.get("gender").toString();
@@ -242,7 +273,7 @@ public class SettingScreen extends AppCompatActivity {
                             genderIndex = i;
                     }
                     for(int i = 0; i< favoriteArrays.length; i++){
-                        if(userFavorite.equals(genderArrays[i]))
+                        if(userFavorite.equals(favoriteArrays[i]))
                             favoriteIndex = i;
                     }
                     gender.setSelection(genderIndex);
@@ -267,12 +298,17 @@ public class SettingScreen extends AppCompatActivity {
     private void saveUserInformation() {
         name = edtName.getText().toString();
         phone = edtPhone.getText().toString();
+        bio = edtBio.getText().toString();
+        userAge = age.getProgress() + "";
         userGender = gender.getSelectedItem().toString();
         userFavorite = favorite.getSelectedItem().toString();
+
 
         Map userInfo = new HashMap();
         userInfo.put("name", name);
         userInfo.put("phone", phone);
+        userInfo.put("bio",bio);
+        userInfo.put("age",userAge);
         userInfo.put("gender", userGender);
         userInfo.put("favorite", userFavorite);
         databaseReference.updateChildren(userInfo);
@@ -300,10 +336,6 @@ public class SettingScreen extends AppCompatActivity {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Task<Uri> uri = taskSnapshot.getStorage().getDownloadUrl();
-                    userInfo.put("name", name);
-                    userInfo.put("phone", phone);
-                    userInfo.put("gender", userGender);
-                    userInfo.put("favorite", userFavorite);
                     while(!uri.isComplete());
                     Uri downloadUrl = uri.getResult();
                     Map userInfo = new HashMap();

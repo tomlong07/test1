@@ -12,6 +12,8 @@ package com.finalprm.fuze.Card;
 public class Card {
     private String userId;
     private String name;
+    private String age;
+    private String bio;
     private String profileImageUrl;
     private String gender;
     private String favorite;
@@ -26,9 +28,11 @@ public class Card {
         this.profileImageUrl = profileImageUrl;
     }
 
-    public Card(String userId, String name, String profileImageUrl, String gender, String favorite) {
+    public Card(String userId, String name, String age, String bio, String profileImageUrl, String gender, String favorite) {
         this.userId = userId;
         this.name = name;
+        this.age = age;
+        this.bio = bio;
         this.profileImageUrl = profileImageUrl;
         this.gender = gender;
         this.favorite = favorite;
@@ -48,6 +52,22 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
 
     public String getProfileImageUrl() {
@@ -72,6 +92,19 @@ public class Card {
 
     public void setFavorite(String favorite) {
         this.favorite = favorite;
+    }
+
+    @Override
+    public String toString() {
+        return "Card{" +
+                "userId='" + userId + '\'' +
+                ", name='" + name + '\'' +
+                ", age='" + age + '\'' +
+                ", bio='" + bio + '\'' +
+                ", profileImageUrl='" + profileImageUrl + '\'' +
+                ", gender='" + gender + '\'' +
+                ", favorite='" + favorite + '\'' +
+                '}';
     }
 }
 

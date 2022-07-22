@@ -16,6 +16,7 @@ public class User implements Serializable {
     private String userId;
     private String name;
     private String phone;
+//    private String age;
     private String notificationKey;
 
     private Boolean selected = false;

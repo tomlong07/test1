@@ -38,14 +38,14 @@
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
         </activity>
-<!--        <activity android:name=".Main.LoadingScreen" />-->
+        <activity android:name=".Main.FirstScreen" />
         <activity android:name=".Main.Register" />
         <activity android:name=".Main.SettingScreen" />
         <activity android:name=".Main.Login" />
         <activity android:name=".Main.MainActivity" />
-<!--        <activity android:name=".Matches.MatchesActivity" />-->
-<!--        <activity android:name=".Chat.ChatActivity" android:windowSoftInputMode = "adjustResize">-->
-<!--        </activity>-->
+        <activity android:name=".Matches.MatchesActivity" />
+        <activity android:name=".Chat.ChatActivity" android:windowSoftInputMode = "adjustResize">
+        </activity>
 
 
 

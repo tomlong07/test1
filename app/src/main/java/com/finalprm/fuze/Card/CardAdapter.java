@@ -21,6 +21,7 @@ public class CardAdapter extends ArrayAdapter<Card>{
 
     public CardAdapter(Context context, int resourceId, List<Card> items){
         super(context, resourceId, items);
+        this.context = context;
     }
 
     public View getView(int position, View convertView, ViewGroup parent){
@@ -32,30 +33,31 @@ public class CardAdapter extends ArrayAdapter<Card>{
 
         TextView name = (TextView) convertView.findViewById(R.id.name);
         ImageView image = (ImageView) convertView.findViewById(R.id.image);
-        ImageView mNeedImage = (ImageView) convertView.findViewById(R.id.favorite);
-        ImageView mGiveImage = (ImageView) convertView.findViewById(R.id.gender);
+        ImageView gender = (ImageView) convertView.findViewById(R.id.gender);
+        ImageView favorite = (ImageView) convertView.findViewById(R.id.favorite);
+        TextView bio = (TextView) convertView.findViewById(R.id.bio_item);
 
-        name.setText(card_item.getName());
+
+        name.setText(card_item.getName() + " | " + card_item.getAge());
             if(card_item.getGender().equals("Male"))
-                mNeedImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_male));
+                gender.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_male));
             else if(card_item.getGender().equals("Female"))
-                mNeedImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_female));
+                gender.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_female));
             else
-                mNeedImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_gay));
+                gender.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_gay));
 
-//            give image
             if(card_item.getFavorite().equals("Funny"))
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.funny));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.funny));
             else if(card_item.getFavorite().equals("Foodie"))
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.foodie));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.foodie));
             else if(card_item.getFavorite().equals("Dance"))
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.dance));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.dance));
             else if(card_item.getFavorite().equals("Netflix"))
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.netflix));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.netflix));
             else if(card_item.getFavorite().equals("Youtube"))
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.youtube_tv));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.youtube_tv));
             else
-                mGiveImage.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.none));
+                favorite.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.none));
 
 
                 Picasso.with(convertView.getContext()).load(card_item.getProfileImageUrl()).placeholder(R.drawable.loading_image).error(R.drawable.profile_image).into(image);
