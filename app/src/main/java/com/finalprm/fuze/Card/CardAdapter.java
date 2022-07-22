@@ -37,7 +37,7 @@ public class CardAdapter extends ArrayAdapter<Card>{
         ImageView favorite = (ImageView) convertView.findViewById(R.id.favorite);
         TextView bio = (TextView) convertView.findViewById(R.id.bio_item);
 
-
+        bio.setText(card_item.getBio());
         name.setText(card_item.getName() + " | " + card_item.getAge());
             if(card_item.getGender().equals("Male"))
                 gender.setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.ic_male));

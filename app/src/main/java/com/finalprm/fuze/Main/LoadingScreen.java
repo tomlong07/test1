@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ public class LoadingScreen extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     TextView tv;
+    private List<Card> rowItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,10 +35,10 @@ public class LoadingScreen extends AppCompatActivity {
         tv = findViewById(R.id.text_name);
 
             FirebaseDatabase database = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app");
-            DatabaseReference myRef = database.getReference();
-
-        myRef.child("Users").addChildEventListener(new ChildEventListener() {
-            List<Card> cards;
+            DatabaseReference myRef = database.getReference().child("Users");
+            tv.setText("TESTING");
+        rowItems = new ArrayList<Card>();
+        myRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
                 String id, name, bio, userAge, userGender, userFavorite, profileImageUrl;
@@ -68,8 +70,8 @@ public class LoadingScreen extends AppCompatActivity {
                     } else
                         profileImageUrl = "";
                     Card card = new Card(id, name, userAge, bio, profileImageUrl, userGender, userFavorite);
-//                    cards.add(card);
-                    tv.setText(card.toString() + "\n");
+                    rowItems.add(card);
+                    tv.setText(rowItems.size() + "\n");
                 }
             }
 
@@ -104,7 +106,7 @@ public class LoadingScreen extends AppCompatActivity {
 
                 finish();
             }
-        }, 500);
+        }, 200);
     }
 
 }

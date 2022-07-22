@@ -70,8 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private void bindingAction() {
         profile.setOnClickListener(this::onProfileClick);
         match.setOnClickListener(this::onMatchClick);
-//        likebtn.setOnClickListener(this::onLikeBtnClick);
-//        dislikebtn.setOnClickListener(this::onDislikeBtnClick);
+
     }
 
     private void onMatchClick(View view) {
@@ -86,13 +85,58 @@ public class MainActivity extends AppCompatActivity {
         this.startActivity(intent);
     }
 
-//    private void onDislikeBtnClick(View view) {
-//        Toast.makeText(this,"Dislike click",Toast.LENGTH_SHORT).show();
-//    }
-//
-//    private void onLikeBtnClick(View view) {
-//        Toast.makeText(this,"Like click",Toast.LENGTH_SHORT).show();
-//    }
+    public void DislikeBtn(View v) {
+        if (rowItems.size() != 0) {
+            Card card_item = rowItems.get(0);
+            String userId = card_item.getUserId();
+            databaseReference.child(userId).child("connections").child("nope").child(currentUserId).setValue(true);
+            Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+
+            rowItems.remove(0);
+            cardAdapter.notifyDataSetChanged();
+
+            //Display a banner when no cards are available to display
+            TextView tv = (TextView)findViewById(R.id.noCardsBanner);
+            if(rowItems.size() == 0) {
+                tv.setVisibility(View.VISIBLE);
+            } else {
+                tv.setVisibility(View.INVISIBLE);
+            }
+
+            Intent btnClick = new Intent(MainActivity.this, BtnDislikeActivity.class);
+            btnClick.putExtra("url", card_item.getProfileImageUrl());
+            startActivity(btnClick);
+
+        }
+    }
+
+    public void LikeBtn(View v) {
+        if (rowItems.size() != 0) {
+            Card card_item = rowItems.get(0);
+            String userId = card_item.getUserId();
+            //check matches
+            databaseReference.child(userId).child("connections").child("yeps").child(currentUserId).setValue(true);
+            isConnectionMatch(userId);
+            Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+
+            rowItems.remove(0);
+            cardAdapter.notifyDataSetChanged();
+
+
+            //Display a banner when no cards are available to display
+            TextView tv = (TextView)findViewById(R.id.noCardsBanner);
+            if(rowItems.size() == 0) {
+                tv.setVisibility(View.VISIBLE);
+            } else {
+                tv.setVisibility(View.INVISIBLE);
+            }
+
+            Intent btnClick = new Intent(MainActivity.this, BtnLikeActivity.class);
+            btnClick.putExtra("url", card_item.getProfileImageUrl());
+            startActivity(btnClick);
+
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,10 +145,10 @@ public class MainActivity extends AppCompatActivity {
         bindingView();
         bindingAction();
         spinner.setVisibility(View.GONE);
-
         slideLayout.start();
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app");
         databaseReference = database.getReference().child("Users");
+        currentUserId = "XX";
         mAuth = FirebaseAuth.getInstance();
         if(mAuth != null && mAuth.getCurrentUser() != null)
             currentUserId = mAuth.getCurrentUser().getUid();
@@ -113,17 +157,76 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
+
         checkUserSex();
-        rowItems = new ArrayList<>();
-        getUserInfomation();
+        rowItems = new ArrayList<Card>();
+
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
+                String id, name, bio, userAge, userGender, userFavorite, profileImageUrl;
+                if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+                    id = dataSnapshot.getKey().toString();
+                    if (map.get("name") != null) {
+                        name = map.get("name").toString();
+                    } else
+                        name = "";
+                    if (map.get("bio") != null) {
+                        bio = map.get("bio").toString();
+                    } else
+                        bio = "";
+                    if (map.get("age") != null) {
+                        userAge = map.get("age").toString();
+                    } else
+                        userAge = "";
+                    if (map.get("gender") != null) {
+                        userGender = map.get("gender").toString();
+                    } else
+                        userGender = "";
+                    if (map.get("favorite") != null) {
+                        userFavorite = map.get("favorite").toString();
+                    } else
+                        userFavorite = "";
+                    if (map.get("profileImageUrl") != null) {
+                        profileImageUrl = map.get("profileImageUrl").toString();
+                    } else
+                        profileImageUrl = "default";
+                    Card card = new Card(id, name, userAge, bio, profileImageUrl, userGender, userFavorite);
+                    if(!currentUserId.equals(card.getUserId()))
+                    rowItems.add(card);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         cardAdapter = new CardAdapter(this, R.layout.item, rowItems );
-        checkRowItem();
+//        checkRowItem();
 
         final SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
         flingContainer.setAdapter(cardAdapter);
 
-        //Display a banner when no cards are available to display
+//        Display a banner when no cards are available to display
 //        TextView tv = (TextView)findViewById(R.id.noCardsBanner);
 //        if(rowItems.size() == 0) {
 //            tv.setVisibility(View.VISIBLE);
@@ -200,67 +303,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         Toast.makeText(getApplicationContext(),  rowItems.size() + " check again", Toast.LENGTH_LONG).show();
-    }
-
-    private void getUserInfomation() {
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String previousChildName) {
-                String id, name, bio, userAge, userGender, userFavorite, profileImageUrl;
-                if(dataSnapshot.exists() && dataSnapshot.getChildrenCount()>0) {
-                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
-                    id = dataSnapshot.getKey().toString();
-                    if (map.get("name") != null) {
-                        name = map.get("name").toString();
-                    } else
-                        name = "";
-                    if (map.get("bio") != null) {
-                        bio = map.get("bio").toString();
-                    } else
-                        bio = "";
-                    if (map.get("age") != null) {
-                        userAge = map.get("age").toString();
-                    } else
-                        userAge = "";
-                    if (map.get("gender") != null) {
-                        userGender = map.get("gender").toString();
-                    } else
-                        userGender = "";
-                    if (map.get("favorite") != null) {
-                        userFavorite = map.get("favorite").toString();
-                    } else
-                        userFavorite = "";
-                    if (map.get("profileImageUrl") != null) {
-                        profileImageUrl = map.get("profileImageUrl").toString();
-                    } else
-                        profileImageUrl = "";
-                    Card card = new Card(id, name, userAge, bio, profileImageUrl, userGender, userFavorite);
-//                    if(!card.getUserId().equals(currentUserId))
-                    rowItems.add(card);
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
     }
 
     private void isConnectionMatch(final String userId) {
@@ -365,11 +407,11 @@ public class MainActivity extends AppCompatActivity {
                         cardAdapter.notifyDataSetChanged();
                     }
                 }
-                if(rowItems.size() == 0) {
-                    tv.setVisibility(View.VISIBLE);
-                } else {
-                    tv.setVisibility(View.INVISIBLE);
-                }
+//                if(rowItems.size() == 0) {
+//                    tv.setVisibility(View.VISIBLE);
+//                } else {
+//                    tv.setVisibility(View.INVISIBLE);
+//                }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
