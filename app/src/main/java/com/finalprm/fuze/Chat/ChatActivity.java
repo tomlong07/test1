@@ -24,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -36,6 +37,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,10 +80,10 @@ public class ChatActivity
 
         //chat id of the current match
         mDatabaseUser = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app").getReference()
-                .child("users").child(currentUserID).child("connections").child("matches")
+                .child("Users").child(currentUserID).child("connections").child("matches")
                 .child(matchId).child("ChatId");
         //reference to all the chats
-        mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
+        mDatabaseChat = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Chat");
 
         getChatId();
 
@@ -90,7 +92,7 @@ public class ChatActivity
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setFocusable(false);
         mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
-        //((LinearLayoutManager) mChatLayoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) mChatLayoutManager).setReverseLayout(true);
         mRecyclerView.setLayoutManager(mChatLayoutManager);
         mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
         mRecyclerView.setAdapter(mChatAdapter);
@@ -141,14 +143,14 @@ public class ChatActivity
 
         // Updating onChat as the current chat id for current user
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentUserID);
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(currentUserID);
         Map onchat = new HashMap();
         onchat.put("onChat", matchId);
         reference.updateChildren(onchat);
 
         // Updating lastSend for opposite user to be shown for the current user after he / she opens this chat activity
 
-        DatabaseReference current = FirebaseDatabase.getInstance().getReference("Users")
+        DatabaseReference current = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users")
                 .child(matchId).child("connections").child("matches").child(currentUserID);
         Map lastSeen = new HashMap();
         lastSeen.put("lastSend", "false");
@@ -157,7 +159,7 @@ public class ChatActivity
     }
 
     protected void onPause(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentUserID);
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(currentUserID);
 
         Map onchat = new HashMap();
         onchat.put("onChat", "None");
@@ -165,7 +167,7 @@ public class ChatActivity
         super.onPause();
     }
     protected void onStop(){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(currentUserID);
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(currentUserID);
 
         Map onchat = new HashMap();
         onchat.put("onChat", "None");
@@ -173,7 +175,7 @@ public class ChatActivity
         super.onStop();
     }
     private void seenMessage(final String text){
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(matchId);
+        DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference("Users").child(matchId);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -186,15 +188,9 @@ public class ChatActivity
                             notification = "";
 
                         if (!dataSnapshot.child("onChat").getValue().toString().equals(currentUserID)) {
-                            // Send notification to the opposite user if he is not on the chat
-
-
-//                            new SendNotification(text, "New message from: " + currentUserName, notification, "activityToBeOpened", "MatchesActivity");
                         }
                         else {
-                            // Mark that the chat has been read and remove notification dot
-
-                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
+                            DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
                             Map seenInfo = new HashMap();
                             seenInfo.put("lastSend", "false");
                             reference.updateChildren(seenInfo);
@@ -230,57 +226,31 @@ public class ChatActivity
 
         TextView name = (TextView) popupView.findViewById(R.id.name);
         ImageView image = (ImageView) popupView.findViewById(R.id.image);
-      /*TextView need = (TextView) popupView.findViewById(R.id.need);
-        TextView give = (TextView) popupView.findViewById(R.id.give);*/
-        TextView budget = (TextView) popupView.findViewById(R.id.budget);
-        ImageView mNeedImage = (ImageView) popupView.findViewById(R.id.needImage);
-        ImageView mGiveImage = (ImageView) popupView.findViewById(R.id.giveImage);
+        ImageView gender = (ImageView) popupView.findViewById(R.id.gender);
+        ImageView favorite = (ImageView) popupView.findViewById(R.id.favorite);
         name.setText(matchName);
-//        need.setText(matchNeed);
-//        give.setText(matchGive);
 
-        //need image
-//        if(matchFavorite.equals("Netflix"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.netflix));
-//        else if(matchFavorite.equals("Amazon Prime"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.amazon_prime_video));
-//        else if(matchFavorite.equals("Hulu"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.hulu));
-//        else if(matchFavorite.equals("Vudu"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.vudu));
-//        else if(matchFavorite.equals("HBO Now"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.hbo));
-//        else if(matchFavorite.equals("Youtube Originals"))
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.youtube_tv));
-//        else
-//            mNeedImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.none));
-//
-//        //give image
-//        if(matchGender.equals("Smile"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.similer));
-//        else if(matchGender.equals("Foodie"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.foodie));
-//        else if(matchGender.equals("Crazy"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.crazy));
-//        else if(matchGender.equals("Zombie dump"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.zombie));
-//        else if(matchGender.equals("cool boy"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.coolboy));
-//        else if(matchGender.equals("cool ladki"))
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.girlcool));
-//        else
-//            mGiveImage.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.none));
-//
-//
-//        switch(matchProfile){
-//            case "default":
-//                Glide.with(popupView.getContext()).load(R.drawable.profile_images).into(image);
-//                break;
-//            default:
-//                Glide.clear(image);
-//                Glide.with(popupView.getContext()).load(matchProfile).into(image);
-//                break;
-//        }
+        if(matchGender.equals("Male"))
+            gender.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_male));
+        else if(matchGender.equals("Female"))
+            gender.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_female));
+        else
+            gender.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_gay));
+
+        if(matchFavorite.equals("Funny"))
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.funny));
+        else if(matchFavorite.equals("Foodie"))
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.foodie));
+        else if(matchFavorite.equals("Dance"))
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dance));
+        else if(matchFavorite.equals("Netflix"))
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.netflix));
+        else if(matchFavorite.equals("Youtube"))
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.youtube_tv));
+        else
+            favorite.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.none));
+
+        Picasso.with(popupView.getContext()).load(matchProfile).placeholder(R.drawable.loading_image).error(R.drawable.profile_image).into(image);
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -343,12 +313,12 @@ public class ChatActivity
         return super.onOptionsItemSelected(item);
     }
     public void deleteMatch(String matchId) {
-        DatabaseReference matchId_in_UserId_dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
-        DatabaseReference userId_in_matchId_dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId).child("connections").child("matches").child(currentUserID);
-        DatabaseReference yeps_in_matchId_dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId).child("connections").child("yeps").child(currentUserID);
-        DatabaseReference yeps_in_userId_dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("yeps").child(matchId);
+        DatabaseReference matchId_in_UserId_dbReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
+        DatabaseReference userId_in_matchId_dbReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(matchId).child("connections").child("matches").child(currentUserID);
+        DatabaseReference yeps_in_matchId_dbReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(matchId).child("connections").child("yeps").child(currentUserID);
+        DatabaseReference yeps_in_userId_dbReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(currentUserID).child("connections").child("yeps").child(matchId);
 
-        DatabaseReference matchId_chat_dbReference = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId);
+        DatabaseReference matchId_chat_dbReference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Chat").child(chatId);
 
         //delete the chatId in chat->chatId
         matchId_chat_dbReference.removeValue();
@@ -380,7 +350,7 @@ public class ChatActivity
             newMessage.put("timeStamp", timeStamp);
             newMessage.put("seen", "false");
 
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID);
+            DatabaseReference ref = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(currentUserID);
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -408,8 +378,8 @@ public class ChatActivity
     }
 
     private void updateLastMessage() {
-        DatabaseReference currUserDb = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
-        DatabaseReference matchDb = FirebaseDatabase.getInstance().getReference().child("Users").child(matchId).child("connections").child("matches").child(currentUserID);
+        DatabaseReference currUserDb = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(currentUserID).child("connections").child("matches").child(matchId);
+        DatabaseReference matchDb = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Users").child(matchId).child("connections").child("matches").child(currentUserID);
 
         Map lastMessageMap = new HashMap();
         lastMessageMap.put("lastMessage", lastMessage);
@@ -483,7 +453,7 @@ public class ChatActivity
                                 isSeen = "true";
 
                                 // Set current message as read for opposite user
-                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatId).child(messageId);
+                                DatabaseReference reference = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Chat").child(chatId).child(messageId);
                                 Map seenInfo = new HashMap();
                                 seenInfo.put("seen", "true");
                                 reference.updateChildren(seenInfo);
@@ -498,7 +468,7 @@ public class ChatActivity
                             newMessage = new ChatObject(message, currentUserBoolean, true);
 
 
-                        DatabaseReference usersInChat = FirebaseDatabase.getInstance().getReference().child("Chat").child(matchId);
+                        DatabaseReference usersInChat = FirebaseDatabase.getInstance("https://fuze-c6271-default-rtdb.asia-southeast1.firebasedatabase.app/").getReference().child("Chat").child(matchId);
 
                         resultsChat.add(newMessage);
                         mChatAdapter.notifyDataSetChanged();

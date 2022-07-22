@@ -112,7 +112,7 @@
                         android:paddingBottom="10dp"
                         android:textSize="16sp" />-->
                 <ImageView
-                    android:id="@+id/giveImage"
+                    android:id="@+id/gender"
                     android:layout_width="100dp"
                     android:layout_height="50dp"
                     android:adjustViewBounds="true"
@@ -140,7 +140,7 @@
                         android:textSize="16sp" />-->
 
                 <ImageView
-                    android:id="@+id/needImage"
+                    android:id="@+id/favorite"
                     android:layout_width="100dp"
                     android:layout_height="50dp"
                     android:adjustViewBounds="true"
