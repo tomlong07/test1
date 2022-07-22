@@ -74,13 +74,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void onMatchClick(View view) {
-        Toast.makeText(this, "Tap on match to change", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Tap on match to change", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, MatchesActivity.class);
         this.startActivity(intent);
     }
 
     private void onProfileClick(View view) {
-        Toast.makeText(this, "Tap on profile to change", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Tap on profile to change", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, SettingScreen.class);
         this.startActivity(intent);
     }
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             Card card_item = rowItems.get(0);
             String userId = card_item.getUserId();
             databaseReference.child(userId).child("connections").child("nope").child(currentUserId).setValue(true);
-            Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
 
             rowItems.remove(0);
             cardAdapter.notifyDataSetChanged();
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
             //check matches
             databaseReference.child(userId).child("connections").child("yeps").child(currentUserId).setValue(true);
             isConnectionMatch(userId);
-            Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
 
             rowItems.remove(0);
             cardAdapter.notifyDataSetChanged();
@@ -234,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
 //            tv.setVisibility(View.INVISIBLE);
 //        }
 
-        Toast.makeText(getApplicationContext(),  rowItems.size() + " ", Toast.LENGTH_LONG).show();
 
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
@@ -249,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 Card obj = (Card) dataObject;
                 String userId = obj.getUserId();
                 databaseReference.child(userId).child("connections").child("nope").child(currentUserId).setValue(true);
-                Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
 
                 //Display a banner when no cards are available to display
                 TextView tv = (TextView)findViewById(R.id.noCardsBanner);
@@ -266,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 String userId = obj.getUserId();
                 databaseReference.child(userId).child("connections").child("yeps").child(currentUserId).setValue(true);
                 isConnectionMatch(userId);
-                Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
 
                 //Display a banner when no cards are available to display
                 TextView tv = (TextView)findViewById(R.id.noCardsBanner);
@@ -298,11 +297,9 @@ public class MainActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             msg = "Failed";
                         }
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                     }
                 });
-
-        Toast.makeText(getApplicationContext(),  rowItems.size() + " check again", Toast.LENGTH_LONG).show();
     }
 
     private void isConnectionMatch(final String userId) {
@@ -326,8 +323,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        Toast.makeText(MainActivity.this, "" +
-                                "New Match", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(MainActivity.this, "" +
+//                                "New Match", Toast.LENGTH_LONG).show();
                         String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
                         Map mapLastTimeStamp = new HashMap<>();
                         long now  = System.currentTimeMillis();

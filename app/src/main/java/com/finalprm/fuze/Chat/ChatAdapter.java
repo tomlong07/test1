@@ -51,7 +51,7 @@ public class ChatAdapter
             holder.mContainer.setGravity(Gravity.END);
             holder.mMessage.setBackground(shape);
             holder.mMessage.setTextColor(Color.parseColor("#1B1A1A"));
-            //holder.mContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+            holder.mContainer.setBackgroundColor(Color.parseColor("#5fc9f8"));
 //#5fc9f8
 
         }else{
@@ -62,7 +62,7 @@ public class ChatAdapter
             holder.mMessage.setBackground(shape);
             holder.mContainer.setGravity(Gravity.START);
             holder.mMessage.setTextColor(Color.parseColor("#1B1A1A"));
-            //holder.mContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+            holder.mContainer.setBackgroundColor(Color.parseColor("#53d769"));
 
             //#53d769
         }

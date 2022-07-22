@@ -127,7 +127,6 @@ public class SettingScreen extends AppCompatActivity {
 
     private void onEnterClick(View view) {
         saveUserInformation();
-        Toast.makeText(getApplicationContext(), "Enter checked", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(SettingScreen.this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -182,7 +181,7 @@ public class SettingScreen extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.ContactUs:
-                Toast.makeText(this,"Contact click",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this,"Contact click",Toast.LENGTH_SHORT).show();
                 new AlertDialog.Builder(SettingScreen.this)
                     .setTitle("Contact Us")
                     .setMessage("Contact us: 2soul.com")
@@ -192,7 +191,7 @@ public class SettingScreen extends AppCompatActivity {
                     break;
             case R.id.logout:
                 spinner.setVisibility(View.VISIBLE);
-                Toast.makeText(this,"Logout user",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this,"Logout user",Toast.LENGTH_SHORT).show();
                 mAuth.signOut();
                 Intent intent = new Intent(SettingScreen.this, FirstScreen.class);
                 startActivity(intent);

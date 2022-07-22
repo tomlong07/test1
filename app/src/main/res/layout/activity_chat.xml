@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EBEBEB"
     tools:context="com.finalprm.fuze.Chat.ChatActivity"
     >
     <LinearLayout
@@ -18,21 +19,21 @@
             android:id="@+id/chatToolbar"
             layout="@layout/toolbar_chat" />
     </LinearLayout>
+
     <LinearLayout
+        android:id="@+id/messagesLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/messagesLayout"
         android:layout_above="@+id/sendLayout"
         android:layout_below="@+id/toolbarLayout"
-        android:orientation="horizontal"
-        >
+        android:background="#EBEBEB"
+        android:orientation="horizontal">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            />
+            android:scrollbars="vertical" />
 
     </LinearLayout>
 <!--    <LinearLayout-->
@@ -129,6 +130,7 @@
                 android:inputType="textMultiLine"
                 android:textSize="18sp"
                 android:textColorHint="#c4c0bd"
+                android:textColor="@color/black"
                 android:background="@null"/>
 
         </LinearLayout>

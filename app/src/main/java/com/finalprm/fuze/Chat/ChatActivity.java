@@ -92,7 +92,7 @@ public class ChatActivity
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setFocusable(false);
         mChatLayoutManager = new LinearLayoutManager(ChatActivity.this);
-        ((LinearLayoutManager) mChatLayoutManager).setReverseLayout(true);
+//        ((LinearLayoutManager) mChatLayoutManager).setReverseLayout(true);
         mRecyclerView.setLayoutManager(mChatLayoutManager);
         mChatAdapter = new ChatAdapter(getDataSetChat(), ChatActivity.this);
         mRecyclerView.setAdapter(mChatAdapter);
@@ -472,8 +472,10 @@ public class ChatActivity
 
                         resultsChat.add(newMessage);
                         mChatAdapter.notifyDataSetChanged();
-                        if(mRecyclerView.getAdapter() != null && resultsChat.size() > 0)
+                        if(mRecyclerView.getAdapter() != null && resultsChat.size() > 0) {
                             mRecyclerView.scrollToPosition(resultsChat.size() - 1);
+//                            Toast.makeText(getApplicationContext(), "Chat empty", Toast.LENGTH_LONG).show();
+                        }
                         else
                             Toast.makeText(getApplicationContext(), "Chat empty", Toast.LENGTH_LONG).show();
                     }

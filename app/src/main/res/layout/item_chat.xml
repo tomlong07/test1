@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/red"
     android:layout_marginTop="10dp">
 
     <LinearLayout
@@ -12,6 +13,7 @@
         android:paddingLeft="15sp"
         android:paddingTop = "15sp"
         android:paddingEnd="15sp"
+        android:background="@color/red"
         android:id="@+id/container">
 
         <TextView
@@ -20,7 +22,8 @@
             android:layout_height="wrap_content"
             android:text="Text"
             android:id="@+id/message"
-            android:textColor="#FFFFFC"
+            android:textColor="@color/black"
+            android:background="@color/red"
             android:padding="10dp"
             android:elevation="2dp"
             android:textSize="18dp"
